@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Project L.E.A.P. — Demo UI</title>
+<style>
+  :root{
+    --bg:#071022; --card:#0f2533; --muted:#9fb3c8; --accent:#6ee7b7;
+    --glass: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; color:#e6f0f6;
+    background:linear-gradient(180deg,#020615 0%, #071022 100%);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1200px; margin:20px auto; padding:18px;}
+  header{display:flex; gap:16px; align-items:center}
+  .logo{width:64px; height:64px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--accent),#4cc0ff); color:#042; font-weight:800; box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+  h1{margin:0; font-size:20px}
+  p.lead{margin:4px 0 0 0; color:var(--muted); font-size:13px}
+  .layout{display:grid; grid-template-columns: 1fr 360px; gap:16px; margin-top:18px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.15)); border-radius:12px; padding:16px; box-shadow:0 8px 30px rgba(0,0,0,0.6);}
+  .dashboard{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .chart{height:260px; border-radius:10px; background:linear-gradient(180deg, rgba(0,0,0,0.1), rgba(255,255,255,0.01)); padding:10px; display:flex; flex-direction:column;}
+  .chart h3{margin:0; font-size:14px; color:var(--accent)}
+  .chart canvas{flex:1}
+  .metrics{display:flex; gap:8px; margin-top:10px}
+  .metric{flex:1; background:var(--glass); padding:10px; border-radius:8px; text-align:center}
+  .metric .val{font-weight:800; font-size:18px; color:#fff}
+  .controls{display:flex; gap:8px; margin-top:12px}
+  button{border:0; padding:10px 12px; border-radius:8px; font-weight:700; cursor:pointer}
+  .btn-primary{background:linear-gradient(90deg,var(--accent),#4cc0ff); color:#022}
+  .btn-ghost{background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.04)}
+  aside.side{display:flex; flex-direction:column; gap:12px}
+  .presenter{position:relative; height:220px; border-radius:10px; overflow:hidden; background:linear-gradient(180deg,#0b2a3a,#071d28); display:flex; align-items:center; justify-content:center; color:var(--muted); border:1px solid rgba(255,255,255,0.03)}
+  .presenter img{width:100%; height:100%; object-fit:cover}
+  .presenter .notice{position:absolute; left:8px; top:8px; background:rgba(0,0,0,0.45); padding:6px 8px; border-radius:8px; font-size:12px}
+  .presenter-drop{opacity:0.9; font-size:13px}
+  .script-box{background:#041226; padding:12px; border-radius:8px; color:#cfeef0; font-size:13px; height:260px; overflow:auto}
+  .team{background:var(--glass); padding:10px; border-radius:8px; color:var(--muted)}
+  footer{margin-top:14px; color:var(--muted); font-size:13px}
+  @media(max-width:1000px){
+    .layout{grid-template-columns:1fr}
+    .dashboard{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">LEAP</div>
+      <div>
+        <h1>Project L.E.A.P. — Lunar Energy Adaptive Prediction</h1>
+        <p class="lead">Demo UI • Simulation + Predictive Control • Team: The Night Watchers</p>
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- Main dashboard -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong>Mission Dashboard</strong>
+            <div style="color:var(--muted); font-size:13px">Simulated 28-day run — predictive vs reactive</div>
+          </div>
+          <div>
+            <button class="btn-primary" id="runSim">▶ Run Simulation</button>
+            <button class="btn-ghost" id="exportPNG">📷 Export Charts</button>
+          </div>
+        </div>
+
+        <div class="dashboard" style="margin-top:12px">
+          <div class="chart" id="chartBatteryCard">
+            <h3>Battery State of Charge (%)</h3>
+            <canvas id="batteryChart"></canvas>
+            <div class="metrics">
+              <div class="metric"><div style="color:var(--muted); font-size:12px">Final Reserve</div><div class="val" id="finalBattery">--%</div></div>
+              <div class="metric"><div style="color:var(--muted); font-size:12px">Min reserve</div><div class="val" id="minBattery">--%</div></div>
+            </div>
+          </div>
+
+          <div class="chart" id="chartTempCard">
+            <h3>Internal Temperature (°C)</h3>
+            <canvas id="tempChart"></canvas>
+            <div class="metrics">
+              <div class="metric"><div style="color:var(--muted); font-size:12px">Final Temp</div><div class="val" id="finalTemp">--°C</div></div>
+              <div class="metric"><div style="color:var(--muted); font-size:12px">Min Temp</div><div class="val" id="minTemp">--°C</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:12px;">
+          <div style="flex:1" class="team">
+            <strong>Team</strong>
+            <div style="margin-top:6px; font-size:13px; color:var(--muted)">
+              Aayush Suthar — Lead Developer<br>
+              Deepesh Mundotiya — Systems & Simulation
+            </div>
+          </div>
+          <div style="width:260px" class="team">
+            <strong>Controls</strong>
+            <div style="margin-top:8px; font-size:13px; color:var(--muted)">
+              Hours per step: <select id="step" style="margin-left:6px; padding:4px; border-radius:6px; background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.04)"><option>12</option><option>6</option><option>1</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side: presenter + script -->
+      <aside class="side">
+        <div class="card presenter" id="presenterBox">
+          <div class="notice">Presenter (drag & drop image here)</div>
+          <div class="presenter-drop" id="presenterDrop">Drop image to replace</div>
+        </div>
+
+        <div class="card script-box" id="scriptBox">
+<pre style="margin:0; font-family:inherit; font-size:13px; color:#cfeef0;">
+[00:00–00:20] Intro
+Hello everyone — I’m excited to present Project L.E.A.P. (Lunar Energy Adaptive Prediction). Our mission is to revolutionize how lunar habitats manage energy, temperature, and life-support using simulation and predictive AI.
+
+[00:20–00:40] Problem
+Lunar surface assets face extreme temperature swings from +120°C to -173°C and extended 14.75-day nights. Reactive systems waste energy and risk mission failure.
+
+[00:40–01:10] Solution
+L.E.A.P. builds a physics-based digital twin plus an LSTM predictive controller. It forecasts thermal trends and schedules low-power, proactive heating to preserve battery and reduce stress.
+
+[01:10–01:45] How it Works
+Telemetry → Predict → Plan → Execute. The simulator models MMRTG, battery, and heater behavior. The controller uses forecasts to make early, efficient adjustments.
+
+[01:45–01:55] Impact
+Expected benefits: +25% final battery reserve (demo target), reduced thermal cycling, higher mission task completion.
+
+[01:55–02:00] Close
+Project L.E.A.P. — a step toward sustainable lunar operations. Team The Night Watchers. Thank you.
+</pre>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button class="btn-primary" id="downloadScript">⬇ Download Script</button>
+          <button class="btn-ghost" id="resetUI">Reset UI</button>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="text-align:center; margin-top:14px; color:var(--muted)">
+      This is a self-contained demo UI. Use the Run Simulation button to generate demo data and visualize battery/temperature curves.
+    </footer>
+  </div>
+
+<script>
+/* Simple chart drawing without external libraries.
+   Two charts: battery (percent) and temp (°C).
+   We'll create demo data for reactive and predictive simulations, and plot predictive only in main line (one trace).
+*/
+
+function createCanvasContext(canvas){
+  canvas.width = canvas.clientWidth * devicePixelRatio;
+  canvas.height = canvas.clientHeight * devicePixelRatio;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  return ctx;
+}
+
+function drawLineChart(canvas, data, options){
+  const ctx = createCanvasContext(canvas);
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  ctx.clearRect(0,0,w,h);
+
+  // background grid
+  ctx.fillStyle = 'rgba(255,255,255,0.02)';
+  ctx.fillRect(0,0,w,h);
+
+  // margins
+  const m = {l:36, r:8, t:18, b:28};
+  const plotW = w - m.l - m.r;
+  const plotH = h - m.t - m.b;
+
+  // scales
+  const xs = data.x;
+  const ys = data.y;
+  const xmin = Math.min(...xs);
+  const xmax = Math.max(...xs);
+  const ymin = options.ymin !== undefined ? options.ymin : Math.min(...ys);
+  const ymax = options.ymax !== undefined ? options.ymax : Math.max(...ys);
+
+  const xToPx = v => m.l + ((v - xmin) / (xmax - xmin || 1)) * plotW;
+  const yToPx = v => m.t + (1 - ((v - ymin) / (ymax - ymin || 1))) * plotH;
+
+  // axes
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(m.l, m.t);
+  ctx.lineTo(m.l, m.t+plotH);
+  ctx.lineTo(m.l+plotW, m.t+plotH);
+  ctx.stroke();
+
+  // y ticks
+  ctx.fillStyle = 'rgba(255,255,255,0.18)';
+  ctx.font = '12px ui-sans-serif';
+  const ticks = 4;
+  for(let i=0;i<=ticks;i++){
+    const yVal = ymin + (i/ticks)*(ymax-ymin);
+    const y = yToPx(yVal);
+    ctx.fillText(Math.round(yVal).toString(), 6, y+4);
+    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+    ctx.beginPath();
+    ctx.moveTo(m.l, y);
+    ctx.lineTo(m.l+plotW, y);
+    ctx.stroke();
+  }
+
+  // draw line (area fill)
+  ctx.beginPath();
+  ctx.moveTo(xToPx(xs[0]), yToPx(ys[0]));
+  for(let i=1;i<xs.length;i++){
+    ctx.lineTo(xToPx(xs[i]), yToPx(ys[i]));
+  }
+  ctx.strokeStyle = 'rgba(110,231,183,0.95)';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // fill area
+  ctx.lineTo(xToPx(xs[xs.length-1]), m.t+plotH);
+  ctx.lineTo(xToPx(xs[0]), m.t+plotH);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(110,231,183,0.08)';
+  ctx.fill();
+
+  // labels
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = '12px ui-sans-serif';
+  ctx.fillText(options.title || '', m.l, 14);
+}
+
+function generateDemoData(hoursPerStep=12){
+  // produce time vector and two simulation models (reactive vs predictive)
+  const lunarDayHours = 24 * 14.75;
+  const totalSimHours = Math.floor(lunarDayHours * 2); // ~28 days
+  const step = hoursPerStep;
+  const xs = [];
+  for(let t=0;t<totalSimHours;t+=step) xs.push(t);
+
+  // start state
+  let battery_reactive = 10; // kWh (max)
+  let battery_predictive = 10;
+  let temp_reactive = 20;
+  let temp_predictive = 20;
+
+  const batteryReactiveArr = [];
+  const batteryPredictiveArr = [];
+  const tempReactiveArr = [];
+  const tempPredictiveArr = [];
+
+  for(let i=0;i<xs.length;i++){
+    const hour = xs[i];
+    // ambient
+    const isDay = (hour % (lunarDayHours*2)) < lunarDayHours;
+    const ambient = isDay ? 120 : -173;
+
+    // reactive controller: heater kicks on hard only if below -40
+    let heater_reactive = temp_reactive < -40 ? 0.5 : 0.0;
+    // predictive controller: gentle proactive heater when trending down
+    let heater_predictive = temp_predictive < 10 && (temp_predictive - ambient) < 80 ? 0.2 : 0.0;
+
+    // MMRTG baseline & loads
+    const mmrtg_kw = 0.110;
+    const base_load_kw = 0.05;
+
+    // battery updates
+    battery_reactive += (mmrtg_kw - (base_load_kw + heater_reactive)) * step;
+    battery_predictive += (mmrtg_kw - (base_load_kw + heater_predictive)) * step;
+    battery_reactive = Math.max(0, Math.min(10, battery_reactive));
+    battery_predictive = Math.max(0, Math.min(10, battery_predictive));
+
+    // temp updates (simplified)
+    const thermal_loss_reactive = (temp_reactive - ambient) * 0.01;
+    const thermal_loss_predictive = (temp_predictive - ambient) * 0.01;
+    const thermal_gain = 2.0 * 0.1;
+
+    temp_reactive += (thermal_gain + heater_reactive*5 - thermal_loss_reactive) * 0.1;
+    temp_predictive += (thermal_gain + heater_predictive*5 - thermal_loss_predictive) * 0.1;
+
+    batteryReactiveArr.push((battery_reactive/10)*100);
+    batteryPredictiveArr.push((battery_predictive/10)*100);
+    tempReactiveArr.push(temp_reactive);
+    tempPredictiveArr.push(temp_predictive);
+  }
+
+  // We'll return predictive outputs (main) plus reactive summary
+  const predictiveBattery = batteryPredictiveArr;
+  const predictiveTemp = tempPredictiveArr;
+
+  return {
+    xs, predictiveBattery, predictiveTemp,
+    reactiveSummary: {
+      finalBattery: batteryReactiveArr[batteryReactiveArr.length-1],
+      finalTemp: tempReactiveArr[tempReactiveArr.length-1]
+    },
+    predictiveSummary: {
+      finalBattery: predictiveBattery[predictiveBattery.length-1],
+      finalTemp: predictiveTemp[predictiveTemp.length-1]
+    }
+  };
+}
+
+// initial canvas creation
+const batteryCanvas = document.getElementById('batteryChart');
+const tempCanvas = document.getElementById('tempChart');
+
+function renderFromData(data){
+  const bData = {x: data.xs, y: data.predictiveBattery};
+  drawLineChart(batteryCanvas, bData, {title:'L.E.A.P. (Predictive) Battery', ymin:0, ymax:110});
+  document.getElementById('finalBattery').innerText = data.predictiveSummary.finalBattery.toFixed(1)+'%';
+  document.getElementById('minBattery').innerText = Math.min(...data.predictiveBattery).toFixed(1)+'%';
+
+  const tData = {x: data.xs, y: data.predictiveTemp};
+  drawLineChart(tempCanvas, tData, {title:'L.E.A.P. (Predictive) Internal Temp', ymin:-200, ymax:150});
+  document.getElementById('finalTemp').innerText = data.predictiveSummary.finalTemp.toFixed(1)+'°C';
+  document.getElementById('minTemp').innerText = Math.min(...data.predictiveTemp).toFixed(1)+'°C';
+}
+
+// run simulation button
+document.getElementById('runSim').addEventListener('click', ()=>{
+  const step = parseInt(document.getElementById('step').value,10) || 12;
+  const data = generateDemoData(step);
+  renderFromData(data);
+});
+
+// export charts as PNG
+document.getElementById('exportPNG').addEventListener('click', ()=>{
+  // combine the two canvases into a single image vertically
+  const c1 = batteryCanvas;
+  const c2 = tempCanvas;
+  const w = Math.max(c1.width, c2.width);
+  const h = c1.height + c2.height + 20;
+  const out = document.createElement('canvas');
+  out.width = w;
+  out.height = h;
+  const ctx = out.getContext('2d');
+  ctx.fillStyle = '#071022';
+  ctx.fillRect(0,0,w,h);
+  // draw battery
+  ctx.drawImage(c1, 0, 0);
+  ctx.drawImage(c2, 0, c1.height + 20);
+  const url = out.toDataURL('image/png');
+  const a = document.createElement('a'); a.href = url; a.download = 'project_leap_charts.png'; a.click();
+});
+
+// Download script
+document.getElementById('downloadScript').addEventListener('click', ()=>{
+  const text = document.querySelector('#scriptBox pre').innerText;
+  const blob = new Blob([text], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'project_leap_script.txt'; a.click();
+});
+
+// presenter drag & drop
+const presenterBox = document.getElementById('presenterBox');
+const presenterDrop = document.getElementById('presenterDrop');
+
+presenterBox.addEventListener('dragover', (e)=>{ e.preventDefault(); presenterBox.style.outline='2px dashed rgba(110,231,183,0.5)'; });
+presenterBox.addEventListener('dragleave', (e)=>{ presenterBox.style.outline='none'; });
+presenterBox.addEventListener('drop', (e)=>{ 
+  e.preventDefault(); presenterBox.style.outline='none';
+  const f = e.dataTransfer.files[0];
+  if(!f) return;
+  const img = document.createElement('img');
+  img.src = URL.createObjectURL(f);
+  img.onload = ()=> URL.revokeObjectURL(img.src);
+  presenterBox.innerHTML = ''; presenterBox.appendChild(img);
+});
+
+// reset ui
+document.getElementById('resetUI').addEventListener('click', ()=>{
+  location.reload();
+});
+
+// initial draw with default data
+renderFromData(generateDemoData(12));
+</script>
+</body>
+</html>
