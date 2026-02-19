@@ -14,7 +14,7 @@ Project L.E.A.P. is a simulation & predictive controller prototype built to demo
    ```
    streamlit run app.py
    ```
-4. The app runs on http://localhost:8501 by default.
+
 
 ## Project structure
 ├── models/
