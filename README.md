@@ -34,7 +34,7 @@ Project L.E.A.P. is a simulation & predictive controller prototype built to demo
 
 ### 1. Machine Learning & Predictive Modeling
 * **Real Dataset Integration (`models/train_model.py`):** Replace the current template script with a robust data preprocessing and training pipeline. Target datasets include MMRTG power decay metrics, battery state-of-charge (SoC) profiles, and extreme external thermal fluctuations.
-* **LSTM Architecture Optimization:** Implement sequential data formatting to handle multi-step ahead predictions for autonomous decision-making during the 14-day lunar night.
+* **LSTM Architecture Optimisation:** Implement sequential data formatting to handle multi-step ahead predictions for autonomous decision-making during the 14-day lunar night.
 
 ### 2. Simulation Engine Enhancements
 * **Stochastic Environmental Fluctuations (`simulation/environment.py`):** Transition the simulation from a deterministic model to a stochastic one by introducing random variables for unpredictable surface events, sudden albedo variations, and solar radiation anomalies.
